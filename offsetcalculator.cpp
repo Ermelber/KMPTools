@@ -51,29 +51,54 @@ void fillNames(string array[])
     array[17]="HPLG";
 }
 
-int getOffsets(int ofs[],const string nams[],const string kmp,int size)
+void getOffsets(int ofs[],const string nams[],const string kmp)
 {
-    int j=0;
-    string tempstr;
-    for (int i=0;i<size;i++)
-    {   
-        tempstr=(kmp[i]+kmp[i+1]+kmp[i+2]+kmp[i+3]);
-        if (tempstr==nams[j])
-        {
-            ofs[j]=i;
-            j++;
-        } 
+    for (int i=0;i<18;i++)
+        ofs[i]=kmp.find(nams[i],0)-88;
+        
+}
+
+
+//Patches Header with right values
+void patchHeader(string &hd,const int ofs[],int size)
+{
+    //Patches Filesize
+    hd[4]=size%256;
+    hd[5]=size/256;
+    //Patches Offsets
+    int i;
+    int j;
+    for (i=16,j=0;j<18;i=i+4,j++)
+    {
+        hd[i]=ofs[j]%256;
+        hd[i+1]=ofs[j]/256;
+        hd[i+2]=0;
+        hd[i+3]=0;
     }
 }
 
 int main()
 {
     string Names[18];
-    int Offsets[18];
     fillNames(Names);
+    int Offsets[18];
+    string Header;
     string keiempi = get_file_contents("course.kmp");
-    //getOffsets(Offsets,Names,keiempi,filesize);
-    cout << (int)keiempi[88] << "\n";
-    cout << keiempi.size() << "\n";
+    Header=keiempi.substr(0,88);
+    getOffsets(Offsets,Names,keiempi);
+    for (int i=0;i<88;i++)
+    {
+        if ((i%16)==0)
+            printf("\n");
+        printf("%0.2X ",Header[i]&255);
+    }
+    printf("\n");
+    patchHeader(Header,Offsets,keiempi.size());
+    for (int i=0;i<88;i++)
+    {
+        if ((i%16)==0)
+            printf("\n");
+        printf("%0.2X ",Header[i]&255);
+    }
     cin.ignore();
 }

@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
 			
 			break;
 		}
-		else if (argv[1] == "-h") {
-			argc = 1;
+		else if (string(argv[1]) == "-h") {
+			argv[1] = NULL;
 			continue;
 		}
 		else {

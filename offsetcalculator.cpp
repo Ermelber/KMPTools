@@ -7,6 +7,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <ctype.h>
+#include <iomanip>
 
 using namespace std;
 
@@ -71,47 +72,105 @@ void patchHeader(string &hd,const int ofs[],int size) {
 	}
 }
 
+void Help(char *arg) {
+	cout << "Usage:\n\n";
+	
+	cout << arg << " -h\t\t-\tDisplay help.\n";
+	cout << arg << " -r [FILE].kmp\t-\tRead a KMP File.\n";
+	cout << arg << " -w txt [FILE].kmp\t-\tWrite a KMP File to TXT.\n";
+	cout << arg << " -w kmp [FILE].txt\t-\tWrite a TXT File to KMP.\n";
+}
+
+void Read(const char *file) {
+	string Names[18];
+	fillNames(Names);
+	int Offsets[18];
+	string Header;
+	
+	string keiempi = get_file_contents(file);
+	Header = keiempi.substr(0, 88);
+	getOffsets(Offsets, Names, keiempi);
+	for (int i = 0; i < 88; i++) {
+		if ((i%16) == 0)
+			printf("\n");
+		printf("%0.2X ", Header[i]&255);
+	}
+		
+	printf("\n");
+	patchHeader(Header, Offsets, keiempi.size());
+	for (int i = 0; i < 88; i++) {
+		if ((i%16) == 0)
+			printf("\n");
+		printf("%0.2X ", Header[i]&255);
+	}
+}
+
+void Write(const char *file, char *ext) {
+	string Names[18];
+	fillNames(Names);
+	int Offsets[18];
+	string Header;
+	
+	string keiempi = get_file_contents(file);
+	Header = keiempi.substr(0, 88);
+	getOffsets(Offsets, Names, keiempi);
+	
+	patchHeader(Header, Offsets, keiempi.size());
+	
+	string fname;
+	stringstream str;
+	
+	if (string(ext) == "txt") {
+		str << file;
+		fname = str.str();
+		fname += ".txt";
+		
+		ofstream out(fname.c_str());
+		
+		if (out.fail()) {
+			printf("Failed to create TXT.\n");
+		}
+		else {
+			printf("KMP to TXT success.\n");
+		}
+		
+		for (int i = 0; i < 88; i++) {
+			if ((i%16) == 0)
+				out << endl;
+			out << hex << uppercase << setw(2) << setfill('0') << int(Header[i]&255);
+		}
+	}
+	else if (string(ext) == "kmp") {
+		printf("KMP Writing coming soon.\n");
+	}
+	else {
+		printf("Invalid File Format. Only available as \"kmp\" or \"txt\".\n");
+	}
+}
+
 int main(int argc, char *argv[]) {
 	printf("KMPTools 0.1 by MKGirlism and Ermelber\n\n");
 	
 	while (true) {
 		if (argv[1] == NULL) {
-			cout << "Usage:\n\n";
-			
-			cout << argv[0] << " -h\t\t-\tDisplay this shit.\n";
-			cout << argv[0] << " [FILE].kmp\t-\tLoad a KMP File.\n";
-			
+			Help(argv[0]);
 			break;
 		}
 		else if (string(argv[1]) == "-h") {
 			argv[1] = NULL;
 			continue;
 		}
-		else {
-			string Names[18];
-			fillNames(Names);
-			int Offsets[18];
-			string Header;
-			
-			char* kmp = argv[1];
-			
-			string keiempi = get_file_contents(kmp);
-			Header=keiempi.substr(0,88);
-			getOffsets(Offsets,Names,keiempi);
-			for (int i=0;i<88;i++) {
-				if ((i%16)==0)
-					printf("\n");
-				printf("%0.2X ",Header[i]&255);
-			}
-			
-			printf("\n");
-			patchHeader(Header,Offsets,keiempi.size());
-			for (int i=0;i<88;i++) {
-				if ((i%16)==0)
-					printf("\n");
-				printf("%0.2X ",Header[i]&255);
-			}
+		else if (string(argv[1]) == "-r") {
+			Read(argv[2]);
 			break;
+		}
+		else if (string(argv[1]) == "-w") {
+			Write(argv[3], argv[2]);
+			break;
+		}
+		else {
+			argv[1] = NULL;
+			continue;
 		}
 	}
 	

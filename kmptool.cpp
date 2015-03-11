@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <iomanip>
 
+typedef unsigned char uchar;
+
 using namespace std;
 
 string get_file_contents(const char *filename) {
@@ -23,6 +25,18 @@ string get_file_contents(const char *filename) {
 		cin.ignore();
 		exit(1);
 	}
+}
+
+float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3)
+{
+    float output;
+
+    *((uchar*)(&output) + 3) = b0;
+    *((uchar*)(&output) + 2) = b1;
+    *((uchar*)(&output) + 1) = b2;
+    *((uchar*)(&output) + 0) = b3;
+
+    return output;
 }
 
 /*
@@ -148,24 +162,23 @@ void Write(const char *file, char *ext) {
                             numpt=length/24;
                             //unsigned int x,y,z,scale;
                             out << "@ENPT" << endl << "#Enemy Points" << endl << "#Number of Points="<< numpt << endl;
-                            out << "#ID: X: Y: Z: SCALE: UNKNOWN1: UNKNOWN2:" << endl;
+                            out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:	 	UNKNOWN1:	UNKNOWN2:" << endl;
                             for (int i=0;i<numpt;i++)
                             {
-                                out << i << " ";
+                                out << i << "\t";
                                 //X
-                                //x=(keiempi[pos+(24*(i))]*16777216)+(keiempi[pos+(24*(i))+1]*65536)+(keiempi[pos+(24*(i))+2]*256)+(keiempi[pos+(24*(i))+3]);
-                                //out << (keiempi[pos+3]) << (keiempi[pos+2]) << (keiempi[pos+1]) << (keiempi[pos]) << " ";
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+3],keiempi[pos+(24*i)+2],keiempi[pos+(24*i)+1],keiempi[pos+(24*i)]) << "\t";
                                 //Y
-                                //out
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+7],keiempi[pos+(24*i)+6],keiempi[pos+(24*i)+5],keiempi[pos+(24*i)+4])<< "\t";
                                 //Z
-                                //out
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+11],keiempi[pos+(24*i)+10],keiempi[pos+(24*i)+9],keiempi[pos+(24*i)+8])<< "\t";
                                 //scale
-                                //out
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+15],keiempi[pos+(24*i)+14],keiempi[pos+(24*i)+13],keiempi[pos+(24*i)+12])<< "\t";
                                 //unknown1
-                                //out
+                                //out << hex << uppercase << (int)keiempi[pos+(24*i)+16] << (int)keiempi[pos+(24*i)+17] << (int)keiempi[pos+(24*i)+18] << (int)keiempi[pos+(24*i)+19] << "\t";
                                 //unknown2
-                                //out
-                                out << endl;
+                                //out << (int)keiempi[pos+(24*i)+20] << (int)keiempi[pos+(24*i)+21] << (int)keiempi[pos+(24*i)+22] << (int)keiempi[pos+(24*i)+23] << "\t";
+                                out << endl << dec;
                             }
                             break;
                         //HPNE
@@ -230,7 +243,7 @@ void Write(const char *file, char *ext) {
                             break;
                         //HPLG
                         case 17:
-                            out << "@GLPT" << endl << "#Glider Points (Sections)" <<endl;
+                            out << "@GLPH" << endl << "#Glider Points (Sections)" <<endl;
                             break;
                     }
                     out << endl;
@@ -274,4 +287,5 @@ int main(int argc, char *argv[]) {
 	
 	printf("\nPress any key to continue...\n");
 	cin.ignore();
+	return 0;
 }

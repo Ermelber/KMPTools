@@ -146,11 +146,15 @@ void Write(const char *file, char *ext) {
 		}
 		else {
              out << "#KMP Written by KMPTools by MKGirlism and Ermelber" << endl << endl;
-             int numpt,pos,length,j;
-		     for (j=0;j<18;j++)
+
+#define NICEHEX setw(2) << setfill('0')
+#define FCAST (unsigned)(unsigned char)
+
+		int numpt,pos,length,j;
+		     for (j = 0; j < 18; j++)
              {
-			     pos=keiempi.find(Names[j],0)+8;
-			     length=keiempi.find(Names[j+1],0)-pos;
+			     pos = keiempi.find(Names[j],0)+8;
+			     length = keiempi.find(Names[j+1],0)-pos;
 			     switch (j)
 			     {
                         //TPTK
@@ -159,11 +163,11 @@ void Write(const char *file, char *ext) {
                             break;
                         //TPNE
                         case 1:
-                            numpt=length/24;
+                            numpt = length/24;
                             //unsigned int x,y,z,scale;
                             out << "@ENPT" << endl << "#Enemy Points" << endl << "#Number of Points="<< numpt << endl;
                             out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:	 	UNKNOWN1:	UNKNOWN2:" << endl;
-                            for (int i=0;i<numpt;i++)
+                            for (int i = 0; i < numpt; i++)
                             {
                                 out << i << "\t";
                                 //X
@@ -175,10 +179,10 @@ void Write(const char *file, char *ext) {
                                 //scale
                                 out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+15],keiempi[pos+(24*i)+14],keiempi[pos+(24*i)+13],keiempi[pos+(24*i)+12])<< "\t";
                                 //unknown1
-                                //out << hex << uppercase << (int)keiempi[pos+(24*i)+16] << (int)keiempi[pos+(24*i)+17] << (int)keiempi[pos+(24*i)+18] << (int)keiempi[pos+(24*i)+19] << "\t";
+                                out << hex << uppercase << NICEHEX << FCAST keiempi[pos+(24*i)+16] << NICEHEX << FCAST keiempi[pos+(24*i)+17] << NICEHEX << FCAST keiempi[pos+(24*i)+18] << NICEHEX << FCAST keiempi[pos+(24*i)+19] << "\t";
                                 //unknown2
-                                //out << (int)keiempi[pos+(24*i)+20] << (int)keiempi[pos+(24*i)+21] << (int)keiempi[pos+(24*i)+22] << (int)keiempi[pos+(24*i)+23] << "\t";
-                                out << endl << dec;
+                                out << hex << uppercase << NICEHEX << FCAST keiempi[pos+(24*i)+20] << NICEHEX << FCAST keiempi[pos+(24*i)+21] << NICEHEX << FCAST keiempi[pos+(24*i)+22] << NICEHEX <<  FCAST keiempi[pos+(24*i)+23];
+				out << endl << dec;
                             }
                             break;
                         //HPNE

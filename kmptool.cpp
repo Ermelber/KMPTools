@@ -234,33 +234,48 @@ void Write(const char *file, char *ext) {
                             break;
                         //HPTI
                         case 4:
-                            numpt = length/68;
+                            numpt = length/28;
                             out << "@ITPH" << endl << "#Item Points (Sections)" <<endl << "#Number of Sections="<< numpt << endl;
-                            out << "#ID:    START:	LENGTH:	PR1:	PR2:	PR3:	PR4:	PR5:	PR6:	PR7: 	PR8: 	PR9: 	PR10: 	PR11: 	PR12: 	PR13: 	PR14: 	PR15: 	PR16: 	NX1: 	NX2: 	NX3: 	NX4: 	NX5: 	NX6: 	NX7: 	NX8: 	NX9: 	NX10: 	NX11: 	NX12: 	NX13: 	NX14: 	NX15: 	NX16:" << endl;
+                            out << "#ID:    START:	LENGTH:	PR1:	PR2:	PR3:	PR4:	PR5:	PR6:	NX1: 	NX2: 	NX3: 	NX4: 	NX5: 	NX6:" << endl;
                             for (int i = 0; i < numpt; i++)
                             {
                                 //ID
                                 out << i << "\t";
                                 //START
                                 a=0;
-                                out << (unsigned short)keiempi[pos+(68*i)+a]+((unsigned short)keiempi[pos+(68*i)+a+1]*256) << "\t";
+                                out << (unsigned short)keiempi[pos+(28*i)+a]+((unsigned short)keiempi[pos+(28*i)+a+1]*256) << "\t";
                                 a+=2;
                                 //LENGTH
-                                out << setw(3)<< (unsigned short)keiempi[pos+(68*i)+a]+((unsigned short)keiempi[pos+(68*i)+a+1]*256) << "\t";
+                                out << setw(3)<< (unsigned short)keiempi[pos+(28*i)+a]+((unsigned short)keiempi[pos+(28*i)+a+1]*256) << "\t";
                                 //PREVIOUSNEXT
-                                for (a+=2;a<68;a+=2)
+                                for (a+=2;a<28;a+=2)
                                 {
-                                    if ((((uchar)keiempi[pos+(68*i)+a])&255==255) && (((uchar)keiempi[pos+(68*i)+a+1])&255==255))
+                                    if ((((uchar)keiempi[pos+(28*i)+a])&255==255) && (((uchar)keiempi[pos+(28*i)+a+1])&255==255))
                                         out << setw(3)<< "-1" << "\t";
                                     else
-                                        out << setw(3)<< (unsigned short)keiempi[pos+(68*i)+a]+((unsigned short)keiempi[pos+(68*i)+a+1]*256) << "\t";
+                                        out << setw(3)<< (unsigned short)keiempi[pos+(28*i)+a]+((unsigned short)keiempi[pos+(28*i)+a+1]*256) << "\t";
                                 }
                                 out << endl;
                             }
                             break;
                         //TPKC
                         case 5:
-                            out << "@CKPT" << endl << "#Checkpoints" <<endl;
+                            numpt=length/24;
+                            out << "@CKPT" << endl << "#Checkpoints" <<endl << "#Number of Points:" << numpt << endl;
+                            out << "#ID:	X1:	    	Z1:	     	X2:	     	Z2:" << endl;
+                            for (int i = 0; i < numpt; i++)
+                            {
+                                out << i << "\t";
+                                //X1
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+3],keiempi[pos+(24*i)+2],keiempi[pos+(24*i)+1],keiempi[pos+(24*i)]) << "\t";
+                                //Z1
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+7],keiempi[pos+(24*i)+6],keiempi[pos+(24*i)+5],keiempi[pos+(24*i)+4])<< "\t";
+                                //X2
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+11],keiempi[pos+(24*i)+10],keiempi[pos+(24*i)+9],keiempi[pos+(24*i)+8])<< "\t";
+                                //Z2
+                                out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+15],keiempi[pos+(24*i)+14],keiempi[pos+(24*i)+13],keiempi[pos+(24*i)+12])<< "\t";    
+                                out << endl;
+                            }
                             break;
                         //HPKC
                         case 6:

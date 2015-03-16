@@ -253,8 +253,9 @@ void Write(const char *file, char *ext) {
 					case 5:
 						numpt=length/24;
 						out << "@CKPT" << endl << "#Checkpoints" <<endl << "#Number of Points:" << numpt << endl;
-						out << "#ID:	X1:	    	Z1:	     	X2:	     	Z2:" << endl;
-						for (int i = 0; i < numpt; i++) {
+						out << "#ID:	X1:	    	Z1:	     	X2:	     	Z2:       	RESPAWNID:  	TYPE:	PREV:	NEXT:	UNKNOWN:" << endl;
+						for (int i = 0; i < numpt; i++)
+						{
 							out << i << "\t";
 							//X1
 							out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+3],keiempi[pos+(24*i)+2],keiempi[pos+(24*i)+1],keiempi[pos+(24*i)]) << "\t";
@@ -264,16 +265,93 @@ void Write(const char *file, char *ext) {
 							out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+11],keiempi[pos+(24*i)+10],keiempi[pos+(24*i)+9],keiempi[pos+(24*i)+8])<< "\t";
 							//Z2
 							out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+15],keiempi[pos+(24*i)+14],keiempi[pos+(24*i)+13],keiempi[pos+(24*i)+12])<< "\t";    
+							//RESPAWN
+							out << left << setw(8) << (unsigned int)keiempi[pos+(24*i)+16] << "\t";
+							//TYPE
+							if ((keiempi[pos+(24*i)+17]&255)==255)
+								out << left << setw(6) << -1 << "\t";
+							else
+								out << left << setw(6) << (unsigned int)keiempi[pos+(24*i)+17] << "\t";
+							//PREVIOUS
+							if ((keiempi[pos+(24*i)+18]&255)==255)
+								out << left << setw(6) << -1 << "\t";
+							else
+								out << left << setw(6) << (unsigned int)keiempi[pos+(24*i)+18] << "\t";
+							//NEXT
+							if ((keiempi[pos+(24*i)+19]&255)==255)
+								out << left << setw(6) << -1 << "\t";
+							else
+								out << left << setw(6) << (unsigned int)keiempi[pos+(24*i)+19] << "\t";
+							//Unknown
+							//out << left << setw(8) << keiempi[pos+(24*i)+20] << "\t";
 							out << endl;
 						}
 						break;
 					//HPKC
 					case 6:
-						out << "@CKPH" << endl << "#Checkpoints (Sections)" <<endl;
+						numpt = length/16;
+						out << "@CKPH" << endl << "#Checkpoints (Sections)" <<endl << "#Number of Sections="<< numpt << endl;
+						out << "#ID:    START:	LENGTH:	PR1:	PR2:	PR3:	PR4:	PR5:	PR6:	NX1: 	NX2: 	NX3: 	NX4: 	NX5: 	NX6:     UNKNOWN:" << endl;
+						for (int i = 0; i < numpt; i++)
+						{
+							//ID
+							out << i << "\t";
+							//START
+							out << (unsigned short)keiempi[pos+(16*i)] << "\t";
+							a=1;
+							//LENGTH
+							out << setw(3)<< (unsigned short)keiempi[pos+(16*i)+a]+((unsigned short)keiempi[pos+(16*i)+a+1]*256) << "\t";
+							//PREVIOUSNEXT
+							for (a++;a<14;a++)
+							{
+								if ((keiempi[pos+(16*i)+a]&255)==255)
+									out << setw(3)<< "-1" << "\t";
+								else
+									out << setw(3)<< (unsigned int)keiempi[pos+(16*i)+a] << "\t";
+							}
+							//UNKNOWN
+							a++;
+							out << setw(3)<< (unsigned short)keiempi[pos+(16*i)+a]+((unsigned short)keiempi[pos+(16*i)+a+1]*256) << "\t";
+							out << endl;
+						}
 						break;
 					//JBOG
 					case 7:
-						out << "@GOBJ" << endl << "#Global Objects" <<endl;
+						numpt=length/64;
+						out << "@GOBJ" << endl << "#Global Objects" << endl << "#Number of Objects="<< numpt <<endl;
+						out << "#ID:    OBJECT ID: 	UNKNOWN: 	X: 		Y: 		Z: 		X-ANGLE: 	Y-ANGLE: 	Z-ANGLE: 	X-SCALE: 	Y-SCALE: 	Z-SCALE: 	ROUTE ID:" << endl;
+						for (int i = 0; i < numpt; i++)
+						{
+							out << i << "\t";
+							//Object ID
+							out << setw(8)<< (unsigned short)keiempi[pos+(64*i)]+((unsigned short)keiempi[pos+(64*i)+1]*256) << "\t";
+							//Unknown
+							out << setw(8)<< (unsigned short)keiempi[pos+(64*i)+2]+((unsigned short)keiempi[pos+(64*i)+3]*256) << "\t";
+							//X
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+7],keiempi[pos+(64*i)+6],keiempi[pos+(64*i)+5],keiempi[pos+(64*i)+4])<< "\t";
+							//Y
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+11],keiempi[pos+(64*i)+10],keiempi[pos+(64*i)+9],keiempi[pos+(64*i)+8])<< "\t";
+							//Z
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+15],keiempi[pos+(64*i)+14],keiempi[pos+(64*i)+13],keiempi[pos+(64*i)+12])<< "\t";
+							//X Angle
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+19],keiempi[pos+(64*i)+18],keiempi[pos+(64*i)+17],keiempi[pos+(64*i)+16])<< "\t";
+							//Y Angle
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+23],keiempi[pos+(64*i)+22],keiempi[pos+(64*i)+21],keiempi[pos+(64*i)+20])<< "\t";
+							//Z Angle
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+27],keiempi[pos+(64*i)+26],keiempi[pos+(64*i)+25],keiempi[pos+(64*i)+24])<< "\t";
+							//X Scale
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+31],keiempi[pos+(64*i)+30],keiempi[pos+(64*i)+29],keiempi[pos+(64*i)+28])<< "\t";
+							//Y Scale
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+35],keiempi[pos+(64*i)+34],keiempi[pos+(64*i)+33],keiempi[pos+(64*i)+32])<< "\t";
+							//Z Scale
+							out << left << setw(8) << bytesToFloat(keiempi[pos+(64*i)+39],keiempi[pos+(64*i)+38],keiempi[pos+(64*i)+37],keiempi[pos+(64*i)+36])<< "\t";
+							//Route ID
+							if (((uchar)keiempi[pos+(64*i)+40])==255)
+								out << setw(8)<< -1 << "\t";
+							else
+								out << setw(8)<< (unsigned short)keiempi[pos+(64*i)+40] << "\t";
+							out << endl;
+						}
 						break;
 					//ITOP
 					case 8:

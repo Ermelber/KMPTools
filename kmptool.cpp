@@ -162,7 +162,7 @@ void Write(const char *file, char *ext) {
 					case 1:
 						numpt = length/24;
 						out << "@ENPT" << endl << "#Enemy Points" << endl << "#Number of Points="<< numpt << endl;
-						out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:	 	UNKNOWN1:	UNKNOWN2:" << endl;
+						out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:	 	MUSHROOM:	DRIFT:	PATHFINDING:	MAX SEARCH Y:" << endl;
 						for (int i = 0; i < numpt; i++) {
 							out << i << "\t";
 							//X
@@ -173,10 +173,16 @@ void Write(const char *file, char *ext) {
 							out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+11],keiempi[pos+(24*i)+10],keiempi[pos+(24*i)+9],keiempi[pos+(24*i)+8])<< "\t";
 							//scale
 							out << left << setw(8) << bytesToFloat(keiempi[pos+(24*i)+15],keiempi[pos+(24*i)+14],keiempi[pos+(24*i)+13],keiempi[pos+(24*i)+12])<< "\t";
-							//unknown1
-							out << hex << uppercase << NICEHEX << FCAST keiempi[pos+(24*i)+16] << NICEHEX << FCAST keiempi[pos+(24*i)+17] << NICEHEX << FCAST keiempi[pos+(24*i)+18] << NICEHEX << FCAST keiempi[pos+(24*i)+19] << "\t";
-							//unknown2
-							out << hex << uppercase << NICEHEX << FCAST keiempi[pos+(24*i)+20] << NICEHEX << FCAST keiempi[pos+(24*i)+21] << NICEHEX << FCAST keiempi[pos+(24*i)+22] << NICEHEX <<  FCAST keiempi[pos+(24*i)+23];
+							//mushroom
+							out << left << setw(8) << (short)keiempi[pos + (24 * i) + 16] << "\t";
+							//drift
+							out << left << setw(6) << (unsigned int)keiempi[pos + (24 * i) + 18] << "\t";
+							//flags
+							//out << left << setw(8) << (unsigned int)keiempi[pos + (24 * i) + 19] << "\t";
+							//path find options
+							out << left << setw(8) << (short)keiempi[pos + (24 * i) + 20] << "\t";
+							//max search Y offset
+							out << left << setw(8) << (short)keiempi[pos + (24 * i) + 22];
 							out << endl << dec << setfill(' ');
 						}
 						break;

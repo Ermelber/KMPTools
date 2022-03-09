@@ -339,13 +339,13 @@ void Write(const char *file, char *ext) {
 					case 7:
 						numpt = length / 64;
 						out << "@GOBJ" << endl << "#Global Objects" << endl << "#Number of Objects:" << numpt << endl;
-						out << "#ID:    OBJECT ID: 	UNKNOWN: 	X: 		Y: 		Z: 		X-ANGLE: 	Y-ANGLE: 	Z-ANGLE: 	X-SCALE: 	Y-SCALE: 	Z-SCALE: 	ROUTE ID:" << endl;
+						out << "#ID:    OBJECT ID: 	UNKNOWN1: 	X: 		Y: 		Z: 		X-ANGLE: 	Y-ANGLE: 	Z-ANGLE: 	X-SCALE: 	Y-SCALE: 	Z-SCALE: 	ROUTE ID:	SETTING1:	SETTING2:	SETTING3:	SETTING4:	SETTING5:	SETTING6:	SETTING7: 	SETTING8:	VISIBILITY:	UNKNOWN2:	UNKNOWN3:" << endl;
 						for (int i = 0; i < numpt; i++)
 						{
 							out << i << "\t";
 							//Object ID
 							out << setw(8) << (unsigned short)keiempi[pos + (64 * i)] + ((unsigned short)keiempi[pos + (64 * i) + 1] * 256) << "\t";
-							//Unknown
+							//Unknown1
 							out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + 2] + ((unsigned short)keiempi[pos + (64 * i) + 3] * 256) << "\t";
 							//X
 							out << left << setw(8) << bytesToFloat(keiempi[pos + (64 * i) + 7], keiempi[pos + (64 * i) + 6], keiempi[pos + (64 * i) + 5], keiempi[pos + (64 * i) + 4]) << "\t";
@@ -370,6 +370,15 @@ void Write(const char *file, char *ext) {
 								out << setw(8) << -1 << "\t";
 							else
 								out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + 40] << "\t";
+							//Settings
+							for (a = 0; a < 16; a += 2)
+								out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + a + 42] << "\t";
+							//Visibility
+							out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + 44] << "\t";
+							//Unknown2
+							out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + 46] << "\t";
+							//Unknown3
+							out << setw(8) << (unsigned short)keiempi[pos + (64 * i) + 48] << "\t";
 							out << endl;
 						}
 						break;

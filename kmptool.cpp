@@ -255,7 +255,7 @@ void Write(const char *file, char *ext) {
 					case 5:
 						numpt = length / 24;
 						out << "@CKPT" << endl << "#Checkpoints" << endl << "#Number of Points:" << numpt << endl;
-						out << "#ID:	X1:	    	Z1:	     	X2:	     	Z2:       	RESPAWNID:  	TYPE:	PREV:	NEXT:	UNKNOWN:" << endl;
+						out << "#ID:	X1:	    	Z1:	     	X2:	     	Z2:       	RESPAWNID:  	TYPE:	PREV:	NEXT:	CLIP ID:	SECTION:	UNKNOWN1:	UNKNOWN2:" << endl;
 						for (int i = 0; i < numpt; i++)
 						{
 							out << i << "\t";
@@ -284,8 +284,26 @@ void Write(const char *file, char *ext) {
 								out << left << setw(6) << -1 << "\t";
 							else
 								out << left << setw(6) << (unsigned int)keiempi[pos + (24 * i) + 19] << "\t";
-							//Unknown
-							//out << left << setw(8) << keiempi[pos + (24 * i) + 20] << "\t";
+							//CLIP ID
+							if ((keiempi[pos + (24 * i) + 20] & 255) == 255)
+								out << left << setw(6) << -1 << "\t\t";
+							else
+								out << left << setw(6) << (unsigned int)keiempi[pos + (24 * i) + 20] << "\t\t";
+							//SECTION
+							if ((keiempi[pos + (24 * i) + 21] & 255) == 255)
+								out << left << setw(6) << -1 << "\t\t";
+							else
+								out << left << setw(6) << (int)keiempi[pos + (24 * i) + 21] << "\t\t";
+							//Unknown1
+							if ((keiempi[pos + (24 * i) + 22] & 255) == 255)
+								out << left << setw(6) << -1 << "\t\t";
+							else
+								out << left << setw(6) << (int)keiempi[pos + (24 * i) + 22] << "\t\t";
+							//Unknown2
+							if ((keiempi[pos + (24 * i) + 23] & 255) == 255)
+								out << left << setw(6) << -1;
+							else
+								out << left << setw(6) << (int)keiempi[pos + (24 * i) + 23];
 							out << endl;
 						}
 						break;

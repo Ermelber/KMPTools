@@ -209,7 +209,7 @@ void Write(const char *file, char *ext) {
 					case 3:
 						numpt = length / 20;
 						out << "@ITPT" << endl << "#Item Routes" << endl << "#Number of Points:" << numpt << endl;
-						out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:	 	UNKNOWN:" << endl;
+						out << "#ID:	X:	    	Y:	     	Z:	     	SCALE:		FLY:    	PLAYER SCAN RADIUS:" << endl;
 						for (int i = 0; i < numpt; i++) {
 							out << i << "\t";
 							//X
@@ -220,9 +220,11 @@ void Write(const char *file, char *ext) {
 							out << left << setw(8) << bytesToFloat(keiempi[pos + (20 * i) + 11], keiempi[pos + (20 * i) + 10], keiempi[pos + (20 * i) + 9], keiempi[pos + (20 * i) + 8]) << "\t";
 							//scale
 							out << left << setw(8) << bytesToFloat(keiempi[pos + (20 * i) + 15], keiempi[pos + (20 * i) + 14], keiempi[pos + (20 * i) + 13], keiempi[pos + (20 * i) + 12]) << "\t";
-							//unknown1
-							out << hex << uppercase << NICEHEX << FCAST keiempi[pos + (20 * i) + 16] << NICEHEX << FCAST keiempi[pos + (20 * i) + 17] << NICEHEX << FCAST keiempi[pos + (20 * i) + 18] << NICEHEX << FCAST keiempi[pos + (20 * i) + 19];
-							out << endl << dec << setfill(' ');
+							//fly
+							out << left << setw(8) << (short)keiempi[pos + (20 * i) + 16] << "\t";
+							//Player Scan Radius
+							out << left << setw(8) << (short)keiempi[pos + (20 * i) + 18];
+							out << endl;
 						}
 						break;
 					//HPTI
